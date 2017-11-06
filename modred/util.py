@@ -3,11 +3,9 @@ import inspect
 import os
 
 import numpy as np
-from numpy import polymul, polyadd
 import scipy
 import scipy.linalg
 import scipy.signal
-from scipy.signal.ltisys import TransferFunction
 
 from .py2to3 import range
 
@@ -498,7 +496,7 @@ def lsim(A, B, C, inputs, initial_condition=None):
 
 
 def impulse(A, B, C, num_time_steps=None):
-    """Generates impulse response outputs for a discrete-time system.
+    """Generates impulse response outputs for discrete-time system.
 
     Args:
         ``A``, ``B``, ``C``: State-space system arrays.
@@ -508,32 +506,20 @@ def impulse(A, B, C, num_time_steps=None):
 
     Returns:
         ``outputs``: Impulse response outputs, with indices corresponding to
-        [time step, output, input].
+        [time step, output, input] with x(0)==B.
 
     No D array is included, but one can simply be prepended to the output if
     it is non-zero.
     """
     ss = scipy.signal.StateSpace(A, B, C, np.zeros((C.shape[0], B.shape[1])), dt=1)
     if num_time_steps is not None:
-        dum, Markovs = scipy.signal.dimpulse(ss, n=num_time_steps)
+        dum, Markovs = scipy.signal.dimpulse(ss, n=num_time_steps + 1)
     else:
         dum, Markovs = scipy.signal.dimpulse(ss)
-    Markovs = np.array(Markovs).swapaxes(0, 1)[1:]
+    # We take x(0) == B, so remove the first element (which is 0).
+    Markovs = np.array(Markovs).swapaxes(0, 1).swapaxes(1, 2)[1:]
     return Markovs
 
-
-def sub_transfer_functions(a, b, dt=None):
-    """
-    Returns a - b, where a and b are scipy TransferFunctions.
-
-    https://stackoverflow.com/questions/35304245/multiply-scipy-lti-transfer-functions
-    """
-    numer = polyadd(polymul(a.num, b.den), -polymul(a.den, b.num))
-    denom = polymul(a.den, b.den)
-    if dt is not None:
-        return TransferFunction(numer, denom, dt=dt)
-    else:
-        return TransferFunction(numer, denom)
 
 
 def load_signals(signal_path, delimiter=None):
