@@ -367,7 +367,7 @@ def eig_biorthog(array, scale_choice='left'):
 
 
 def balanced_truncation(
-        A, B, C, order=None, return_sing_vals=False):
+    A, B, C, order=None, return_sing_vals=False):
     """Balance and truncate discrete-time linear time-invariant (LTI) system
     defined by A, B, C arrays.
 
@@ -396,17 +396,17 @@ def balanced_truncation(
     B = np.array(B)
     C = np.array(C)
     gram_cont = scipy.linalg.solve_lyapunov(A, B.dot(B.transpose().conj()))
-    gram_obsv = scipy.linalg.solve_lyapunov(A.transpose().conj(),
-        C.transpose().conj().dot(C))
+    gram_obsv = scipy.linalg.solve_lyapunov(
+        A.transpose().conj(), C.transpose().conj().dot(C))
     Uc, Ec, Vc = svd(gram_cont)
     Uo, Eo, Vo = svd(gram_obsv)
-    Lc = Uc.dot(np.diag(Ec**0.5))
-    Lo = Uo.dot(np.diag(Eo**0.5))
+    Lc = Uc.dot(np.diag(Ec ** 0.5))
+    Lo = Uo.dot(np.diag(Eo ** 0.5))
     U, E, V = svd(Lo.transpose().dot(Lc))
     if order is None:
         order = len(E)
-    SL = Lo.dot(U[:, :order]).dot(np.diag(E**-0.5))
-    SR = Lc.dot(V[:, :order]).dot(np.diag(E**-0.5))
+    SL = Lo.dot(U[:, :order]).dot(np.diag(E ** -0.5))
+    SR = Lc.dot(V[:, :order]).dot(np.diag(E ** -0.5))
     A_bal_trunc = SL.transpose().dot(A).dot(SR)
     B_bal_trunc = SL.transpose().dot(B)
     C_bal_trunc = C.dot(SR)
@@ -431,7 +431,7 @@ def drss(num_states, num_inputs, num_outputs):
 
     By construction, all eigenvalues are real and stable.
     """
-    eig_vals = np.linspace(.9, .95, num_states)
+    eig_vals = np.linspace(0.9, 0.95, num_states)
     eig_vecs = np.random.normal(0, 2., (num_states, num_states))
     A = np.real(
         np.linalg.inv(eig_vecs).dot(np.diag(eig_vals).dot(eig_vecs)))
@@ -488,8 +488,8 @@ def lsim(A, B, C, inputs, initial_condition=None):
     A = np.array(A)
     B = np.array(B)
     C = np.array(C)
-    ss = scipy.signal.StateSpace(A, B, C,
-                                 np.zeros((C.shape[0], B.shape[1])), dt=1)
+    ss = scipy.signal.StateSpace(
+        A, B, C, np.zeros((C.shape[0], B.shape[1])), dt=1)
     tout_dum, outputs, xout_dum = scipy.signal.dlsim(
         ss, inputs, x0=initial_condition)
     return outputs
@@ -511,7 +511,8 @@ def impulse(A, B, C, num_time_steps=None):
     No D array is included, but one can simply be prepended to the output if
     it is non-zero.
     """
-    ss = scipy.signal.StateSpace(A, B, C, np.zeros((C.shape[0], B.shape[1])), dt=1)
+    ss = scipy.signal.StateSpace(
+        A, B, C, np.zeros((C.shape[0], B.shape[1])), dt=1)
     if num_time_steps is not None:
         dum, Markovs = scipy.signal.dimpulse(ss, n=num_time_steps + 1)
     else:
@@ -519,7 +520,6 @@ def impulse(A, B, C, num_time_steps=None):
     # We take x(0) == B, so remove the first element (which is 0).
     Markovs = np.array(Markovs).swapaxes(0, 1).swapaxes(1, 2)[1:]
     return Markovs
-
 
 
 def load_signals(signal_path, delimiter=None):

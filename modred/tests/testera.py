@@ -192,12 +192,13 @@ class testERA(unittest.TestCase):
                     B_path_computed = join(self.test_dir, 'B_computed.txt')
                     C_path_computed = join(self.test_dir, 'C_computed.txt')
 
-                    A_reduced, B_reduced, C_reduced = \
-                        my_ERA.compute_model(Markovs, num_states_model)
+                    A_reduced, B_reduced, C_reduced = my_ERA.compute_model(
+                        Markovs, num_states_model)
                     my_ERA.put_model(
                         A_path_computed, B_path_computed, C_path_computed)
 
-                    Markovs_reduced = util.impulse(A_reduced, B_reduced, C_reduced, time_steps[-1] + 1)
+                    Markovs_reduced = util.impulse(
+                        A_reduced, B_reduced, C_reduced, time_steps[-1] + 1)
                     Markovs_reduced = Markovs_reduced[time_steps]
                     """
                     import matplotlib.pyplot as PLT
@@ -216,8 +217,10 @@ class testERA(unittest.TestCase):
                         PLT.show()
                     """
                     max_Markov = np.amax(Markovs)
-                    np.testing.assert_allclose(Markovs_reduced / max_Markov, Markovs / max_Markov,
-                                               rtol=1e-1, atol=1e-1)
+                    np.testing.assert_allclose(
+                        Markovs_reduced / max_Markov,
+                        Markovs / max_Markov,
+                        rtol=1e-1, atol=1e-1)
 
                     np.testing.assert_equal(
                         util.load_array_text(A_path_computed), A_reduced)
