@@ -477,8 +477,8 @@ def balanced_truncation(
     U, E, V = svd(Lo.transpose().dot(Lc))
     if order is None:
         order = len(E)
-    SL = Lo.dot(U[:,:order]).dot(np.diag(E**-0.5))
-    SR = Lc.dot(V[:,:order]).dot(np.diag(E**-0.5))
+    SL = Lo.dot(U[:, :order]).dot(np.diag(E[:order] ** -0.5))
+    SR = Lc.dot(V[:, :order]).dot(np.diag(E[:order] ** -0.5))
     A_bal_trunc = SL.transpose().dot(A).dot(SR)
     B_bal_trunc = SL.transpose().dot(B)
     C_bal_trunc = C.dot(SR)
